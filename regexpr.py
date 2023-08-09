@@ -16,3 +16,4 @@ with open("phonebook.csv", "w") as f:
   
 ## Вместо contacts_list подставьте свой список:
     datawriter.writerows(contacts_list)
+    #e
