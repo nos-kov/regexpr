@@ -71,4 +71,7 @@ pprint(clean_list)
 with open("phonebook.csv", "w") as f:
     datawriter = csv.writer(f, delimiter=',')
   
-    datawriter.writerows(contacts_list)
+    datawriter.writerows(clean_list)
+
+(\+7|8)\s*\(*(\d\d\d)(\)*|(\d*)|\-*)\s*(\d\d\d)(\d|\-)(\d\d)((\d)|\-)(\d*)\s*\(*(доб.)*\s*(\d*)\)*
++7(\2)\5-\7
