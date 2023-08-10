@@ -1,57 +1,74 @@
 from pprint import pprint
 import re
-## Читаем адресную книгу в формате CSV в список contacts_list:
+
+def remove_dups(list):
+    marker_set = set()
+    dup_free = []
+
+    for sublist in list:
+        first_elt = sublist[0]
+        if first_elt not in marker_set:
+            dup_free.append(sublist)
+            marker_set.add(first_elt)
+    return dup_free
+
 import csv
 with open("phonebook_raw.csv", encoding="utf8") as f:
     rows = csv.reader(f, delimiter=",")
     contacts_list = list(rows)
-#pprint(contacts_list)
 
-## 1. Выполните пункты 1-3 задания.
-## Ваш код
-#flag = False
-result = []
-keywords = ('Минфин', 'ФНС')
+semiresult = []
 
 for element in contacts_list:
-    clean_ = element[0].split()
+    clean1 = element[0].split()
+    clean2 = element[1].split()
     new_element =[]
-    new_element = clean_ + new_element
+    new_element = clean1 + clean2 + new_element
     for id_el, nested_element in enumerate(element):
-        #nested_element_list =[]
-        #if flag == True: break
-        if id_el > 0:
-            #if  nested_element: nested_element_list = [nested_element]
+
+        if id_el > 1:
+            
             nested_element_list = [nested_element]
             new_element = new_element + nested_element_list
-            if id_el > 3:
 
-                for idx, data in enumerate(new_element[4:]):
-                    if data in keywords: 
-                        new_element[3] = data
-                        new_element[idx+4] = ''
-                        #flag = True
-                        #break
-                    if '@' in data:
-                        new_element[6] = data
-                        new_element.pop(idx+4)
+    semiresult.append(new_element)
 
-                for idx, data in enumerate(new_element[6:]):
-                    if re.search(r'\d\d\d', data):
-                        new_element[5] = data
-                        #new_element.pop(idx+4)
-                        new_element[idx+6] = ''
+clean_list = remove_dups(semiresult)
+#clean_list = semiresult
+keywords = ('Минфин', 'ФНС')
+for idx, data in enumerate(clean_list):
+    if idx > 0: 
+        fixed = False
+        flag, flag1, flag2, flag3 = (False,)*4
+        for idy, result_element in enumerate(data):
+            if fixed == True: continue
+            if idy > 2: 
+                
+                if result_element in keywords: 
+                    data[3] = result_element
+                    data[idy] = ''
+                    flag = True
+                            
+                elif '@' in result_element:
+                    data[6] = result_element
+                    data.pop(idy)
+                    flag1 = True
 
+                elif re.search(r'\d\d\d', result_element) and '@' not in result_element:
+                    data[5] = result_element
+                    data[idy] = ''
+                    flag2 = True
+                elif result_element == '':
+                    pass
+                else:
+                    data[4] = result_element
+                    data[idy] = ''
+                    flag3 = True
+                if all((flag,flag1,flag2,flag3)) : fixed = True
 
-    result.append(new_element[:7])
+pprint(clean_list)
 
-
-pprint(result)
-## 2. Сохраните получившиеся данные в другой файл.
-## Код для записи файла в формате CSV:
 with open("phonebook.csv", "w") as f:
     datawriter = csv.writer(f, delimiter=',')
   
-## Вместо contacts_list подставьте свой список:
     datawriter.writerows(contacts_list)
-    #e
